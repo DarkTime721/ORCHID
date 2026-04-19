@@ -72,15 +72,16 @@ Shadow evaluation runs the losing branch on 10% of tasks independently, producin
  
 ## Hardware Note
  
-This system runs entirely on local hardware — an RTX 4060 laptop GPU (8GB VRAM, 16GB RAM). Multiple LLM calls per run (classifier + agent(s) + judge) means inference is intentionally slow. This surfaces the real compute cost tradeoff between architectures that cloud-hosted benchmarks typically obscure.
+This system runs entirely on local hardware — an RTX 4060 laptop GPU (8GB VRAM, 16GB RAM). Multiple LLM calls per run (classifier + agent(s) + judge) means inference is slow on constrained hardware, but the architecture is model-agnostic. This surfaces the real compute cost tradeoff between architectures that cloud-hosted benchmarks typically obscure.
+Any Ollama-compatible model can be swapped in — larger or cloud-hosted models will significantly improve both speed and output quality.
  
 **Recommended models given VRAM constraints:**
  
 | Node | Model | Notes |
 |---|---|---|
-| Classifier | `qwen3:8b` | Fast, reliable taxonomy |
+| Classifier | `qwen2.5` | Fast, reliable taxonomy |
 | Worker | `qwen3:8b` | Primary worker model |
-| Judge | `mistral:7b` | No thinking mode, clean structured output |
+| Judge | `llama3.1` | No thinking mode, clean structured output |
  
 ---
 
