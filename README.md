@@ -1,15 +1,93 @@
-# Single / Multi Agent Pipeline
+# ⬡ ORCHID — Orchestration Research for Comparing Heterogeneous Intelligent Designs
+ 
+A full-stack AI engineering project that builds, evaluates, and visualizes an intelligent task routing system — empirically comparing single-agent vs multi-agent LLM architectures in real time.
+ 
+---
 
-A LangGraph-based agent routing pipeline that automatically decides whether a task
-is best handled by a **single agent** or a **multi-agent** architecture, then
-evaluates the result through a judge and exposes everything via **FastAPI**.
+## What it does
+ 
+Most agentic AI systems hardcode whether to use one agent or many. ORCHID routes tasks dynamically:
+ 
+- A **classifier node** analyzes the task and assigns a confidence score
+- Tasks are routed to either a **single-agent pipeline** (direct LLM) or a **multi-agent pipeline** (parallel workers → synthesizer)
+- A **judge node** scores both architectures on response quality (0–10)
+- **10% of runs** trigger shadow evaluation — the non-routed architecture runs on the same task to produce ground-truth comparison data, eliminating survivor bias from the metrics dataset
+- Every run is logged. A live dashboard shows latency, judge scores, routing distribution, and run history
 
+---
+
+## Architecture
+ 
+```
+Task Input
+    │
+    ▼
+┌─────────────┐
+│  Classifier │  ← task taxonomy + confidence scoring
+└──────┬──────┘
+       │
+  ┌────┴────┐
+  │         │
+  ▼         ▼
+Single    Parallel Workers
+Agent     └──► Synthesizer
+  │              │
+  └──────┬───────┘
+         ▼
+    ┌─────────┐
+    │  Judge  │  ← Llama 3.1 8B, structured output
+    └────┬────┘
+         ▼
+  Optimal Decision
+
+```
+ 
+Shadow evaluation runs the losing branch on 10% of tasks independently, producing unbiased comparison data across both architectures.
+ 
+---
+
+## Stack
+ 
+| Layer | Technology |
+|---|---|
+| Orchestration | LangGraph |
+| Local inference | Ollama |
+| Worker models | Qwen3 8B |
+| Judge model | Llama 3.1 8B |
+| Observability | LangSmith |
+| Backend | FastAPI + SSE streaming |
+| Frontend | React + Vite |
+ 
+---
+ 
+## Features
+ 
+- **Live pipeline animation** — the UI shows which node is currently executing in real time via Server-Sent Events
+- **Confidence-aware routing** — tasks below the confidence threshold are flagged as ambiguous
+- **LLM-as-judge evaluation** — pairwise scoring with winner, per-architecture scores, and rationale
+- **Shadow evaluation** — prevents survivor bias by occasionally running the non-routed architecture
+- **Metrics dashboard** — avg latency, judge scores, and routing distribution across all runs
+- **Run history** — full log of every task, routing decision, and judge result
+---
+ 
+## Hardware Note
+ 
+This system runs entirely on local hardware — an RTX 4060 laptop GPU (8GB VRAM, 16GB RAM). Multiple LLM calls per run (classifier + agent(s) + judge) means inference is intentionally slow. This surfaces the real compute cost tradeoff between architectures that cloud-hosted benchmarks typically obscure.
+ 
+**Recommended models given VRAM constraints:**
+ 
+| Node | Model | Notes |
+|---|---|---|
+| Classifier | `qwen3:8b` | Fast, reliable taxonomy |
+| Worker | `qwen3:8b` | Primary worker model |
+| Judge | `mistral:7b` | No thinking mode, clean structured output |
+ 
 ---
 
 ## Project Structure
 
 ```
-project/
+ORCHID/
 │
 ├── main.py                    # FastAPI app — entry point
 │
@@ -44,6 +122,18 @@ project/
 └── requirements.txt
 ```
 
+---
+
+## Key Engineering Decisions
+ 
+**Shadow evaluation for unbiased metrics** — only logging the routed architecture creates survivor bias. Running the non-routed path on 10% of tasks produces ground-truth comparison data regardless of routing decisions.
+ 
+**Confidence-aware routing** — rather than a hard classifier, the system produces a confidence score and handles low-confidence cases as a separate ambiguous category, preventing forced misclassification.
+ 
+**Llama 3.1 8B as judge** — chosen specifically because it has no thinking mode, making `.with_structured_output()` reliable without prompt hacks or response parsing workarounds.
+ 
+**SSE over WebSockets** — simpler protocol for unidirectional server-to-client streaming. No handshake overhead, works through standard HTTP proxies, auto-reconnects natively in the browser.
+ 
 ---
 
 ## Installation
@@ -149,6 +239,24 @@ stream_pipeline("What is the time complexity of Dijkstra's algorithm and why?")
 | `run_history.json` | Append-only JSONL log of every completed run (used for routing feedback) |
 | `shadow_run.json` | Append-only JSONL log of 10%-sampled shadow evaluations |
 
+---
+
+## Sample Tasks
+ 
+```python
+# Single-agent — self-contained, factual
+"What is the time complexity of Dijkstra's algorithm and why?"
+"Calculate the Schwarzschild radius of an object with the mass of Earth"
+ 
+# Multi-agent — parallel research across multiple entities
+"Compare the transformer architecture, RWKV, and Mamba — explain how each handles long-range dependencies"
+"Find the latest benchmark scores for Llama 4, Qwen3, and Gemini 2.5 Pro across reasoning, coding, and math"
+ 
+# Ambiguous — tests routing confidence
+"Is RAG still relevant now that context windows are so large?"
+"What should I know about deploying LLMs in production in 2025?"
+```
+ 
 ---
 
 ## Module Responsibilities (quick reference)
