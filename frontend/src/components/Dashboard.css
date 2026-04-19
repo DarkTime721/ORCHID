@@ -1,0 +1,186 @@
+.dash-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  min-height: 300px;
+  color: var(--text-muted);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+}
+
+.loading-hex {
+  font-size: 36px;
+  color: var(--accent);
+  animation: pulse-hex 1.8s ease infinite;
+}
+
+@keyframes pulse-hex {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50%       { opacity: 1;   transform: scale(1.08); }
+}
+
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+}
+
+.stat-card {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: border-color 0.2s ease;
+}
+
+.stat-card:hover { border-color: var(--border-lit); }
+
+.stat-label {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.stat-value {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.1;
+}
+
+.routing-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.rbar-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.rbar-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 0.06em;
+  width: 60px;
+  flex-shrink: 0;
+}
+
+.rbar-track {
+  flex: 1;
+  height: 5px;
+  background: var(--bg-3);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.rbar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.rbar-count {
+  font-size: 12px;
+  color: var(--text);
+  font-weight: 500;
+  min-width: 60px;
+  text-align: right;
+}
+
+.rbar-pct {
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+.history-table {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ht-header {
+  display: grid;
+  grid-template-columns: 1fr 70px 100px 55px 55px 80px;
+  gap: 12px;
+  padding: 6px 10px;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 4px;
+}
+
+.ht-row {
+  display: grid;
+  grid-template-columns: 1fr 70px 100px 55px 55px 80px;
+  gap: 12px;
+  padding: 9px 10px;
+  border-radius: var(--radius);
+  transition: background 0.15s ease;
+  align-items: center;
+}
+
+.ht-row:hover { background: var(--bg-3); }
+
+.ht-task {
+  font-size: 12px;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ht-arch {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+
+.ht-arch.arch-single { color: var(--node-single); }
+.ht-arch.arch-multi  { color: var(--node-multi);  }
+.ht-arch.arch-both   { color: var(--node-judge);  }
+
+.ht-cell {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.no-data {
+  font-size: 12px;
+  color: var(--text-dim);
+  text-align: center;
+  padding: 32px;
+  letter-spacing: 0.06em;
+}
+
+@media (max-width: 700px) {
+  .ht-header,
+  .ht-row {
+    grid-template-columns: 1fr 60px 55px 55px;
+  }
+
+  /* hiding task_type and latency on small screens */
+  .ht-header span:nth-child(3),
+  .ht-row   span:nth-child(3),
+  .ht-header span:nth-child(6),
+  .ht-row   span:nth-child(6) {
+    display: none;
+  }
+}

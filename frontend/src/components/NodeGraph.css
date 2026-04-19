@@ -1,0 +1,194 @@
+.node-graph {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px 20px 24px;
+}
+
+.graph-title {
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin-bottom: 18px;
+}
+
+.pipeline-track {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4;
+}
+
+.pipeline-node {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--bg-3);
+  position: relative;
+  transition: all 0.22s ease;
+  overflow: hidden;
+}
+
+.pipeline-node.type-single  { --node-color: var(--node-single); }
+.pipeline-node.type-multi   { --node-color: var(--node-multi);  }
+.pipeline-node.type-judge   { --node-color: var(--node-judge);  }
+.pipeline-node.type-router  { --node-color: var(--node-router); }
+
+.pipeline-node.is-active {
+  border-color: var(--node-color);
+  background: color-mix(in srgb, var(--node-color) 8%, var(--bg-3));
+  box-shadow: 0 0 0 1px var(--node-color), 0 4px 20px color-mix(in srgb, var(--node-color) 20%, transparent);
+}
+
+.pipeline-node.is-done {
+  border-color: var(--border);
+  opacity: 0.55;
+}
+
+.pipeline-node.is-dimmed {
+  opacity: 0.25;
+}
+
+.pnode-indicator {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pnode-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  flex: 1;
+  min-width: 0;
+}
+
+.pnode-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text);
+  letter-spacing: 0.02em;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: unset;
+}
+
+.is-active .pnode-label { color: var(--node-color); }
+
+.pnode-sub {
+  font-size: 10px;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+}
+
+.active-dot {
+  display: block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--node-color);
+  box-shadow: 0 0 0 0 var(--node-color);
+  animation: pulse-ring 1.4s ease infinite;
+}
+
+.idle-dot {
+  display: block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--border-lit);
+}
+
+.done-icon {
+  font-size: 11px;
+  color: var(--green);
+  font-weight: 600;
+  line-height: 1;
+}
+
+.pnode-glow {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    color-mix(in srgb, var(--node-color) 6%, transparent) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s linear infinite;
+  pointer-events: none;
+}
+
+.branch-row {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.branch-row .pipeline-node {
+  flex: 1;
+  min-width: 0;
+  min-width: 110px;
+}
+
+.branch-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+  flex-shrink: 0;
+  width: 22px;
+}
+
+.pipe-connector {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 20px;
+  position: relative;
+  margin: 0 auto;
+  width: 2px;
+}
+
+.connector-line {
+  width: 1px;
+  flex: 1;
+  background: var(--border);
+  transition: background 0.3s ease;
+}
+
+.pipe-connector.is-lit .connector-line {
+  background: var(--accent);
+  box-shadow: 0 0 6px var(--accent-glow);
+}
+
+.connector-dot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: slide-down 0.8s ease infinite;
+}
+
+@keyframes slide-down {
+  0%   { top: 10%; opacity: 0; }
+  50%  { opacity: 1; }
+  100% { top: 90%; opacity: 0; }
+}
